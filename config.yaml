@@ -10,7 +10,7 @@ model_list:
     litellm_params:
       model: mercury-coder-small
       api_base: "https://api.inceptionlabs.ai/v1" # Custom API base URL
-      api_key: "os.environ/OPENAI_TOKEN" # OPENAI_TOKEN env var
+      api_key: "os.environ/MERCURY_TOKEN" # OPENAI_TOKEN env var
   - model_name: gemini-pro
     litellm_params:
       model: gemini-pro
