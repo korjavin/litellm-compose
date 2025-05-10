@@ -1,0 +1,48 @@
+version: "3.8" # You can adjust this based on your Podman Compose version
+
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:latest # Use the latest or a specific version
+    container_name: litellm
+    ports:
+      - "4000:4000" # Expose LiteLLM on port 4000.  Change the host port if needed.
+    restart: unless-stopped
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY} # **IMPORTANT:** Change this to a strong, secret key!
+      LITELLM_MODEL_NAME: ${LITELLM_MODEL_NAME_FROM_CONFIG} # This will determine the model used from config.yaml
+      # Provider API keys. Ensure these are set in your .env file or shell environment.
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}        # For models like gemini-pro
+      OPENAI_TOKEN: ${OPENAI_TOKEN}            # For models like mercury-coder
+      GROK_API_KEY: ${GROK_API_KEY}            # For Grok models
+      # If you have a custom API base for a specific provider, you can set it here, e.g.:
+      # OPENAI_API_BASE: "https://your-custom-openai-endpoint.com/v1" # For OpenAI or compatible APIs
+    volumes:
+      - ./config.yaml:/app/config.yaml # Mount the config file
+    #  For Langfuse integration (optional):
+    #  environment:
+    #    LANGFUSE_SECRET_KEY: "your_langfuse_secret_key"
+    #    LANGFUSE_PUBLIC_KEY: "your_langfuse_public_key"
+
+#  Optional: If you want to use a database for LiteLLM (for features like cost tracking)
+#  db:
+#    image: postgres:14-alpine
+#    container_name: litellm_db
+#    volumes:
+#      - litellm_db_data:/var/lib/postgresql/data/
+#    environment:
+#      POSTGRES_USER: litellm
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # **IMPORTANT:** Change this!
+#      POSTGRES_DB: litellm
+#    restart: unless-stopped
+#  depends_on:
+#    - litellm
+
+#volumes:
+#  litellm_db_data: # Define the volume for the database
+
+networks:
+  default:
+    name: litellm_network #Custom network, so only this service can be linked.
